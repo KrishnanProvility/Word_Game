@@ -60,10 +60,9 @@ function startGame() {
 function wordGame() {
   const inputWord = document.querySelector(".inputValue").value.toUpperCase();
   if (inputWord != "" && randomWord != "") {
-    checkWord(randomWord, inputWord);
-  } else {
-    alert("Please press start button and give input to start ");
+    return checkWord(randomWord, inputWord);
   }
+  alert("Please press start button and give input to start ");
 }
 
 function randomWordGen() {
@@ -75,16 +74,12 @@ function randomWordGen() {
 function checkWord(randomword, inputWord) {
   if (randomword == inputWord) {
     addWord(randomword, inputWord);
-    
-     
-     return 
+    return;
   }
   addWord(randomword, inputWord);
   setTimeout(() => {
     maxReach(currentRow, randomword);
-    
   }, 4000);
-  
 }
 
 function addWord(randomword, inputWord) {
