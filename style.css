@@ -38,10 +38,33 @@
   margin-top: 30px;
   width: 250px;
 }
-.start-btn button{
+.start-btn button {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 30px;
+  margin-top: 10px;
+  width: 5em;
+  height: 3em;
   cursor:pointer;
+  border: 1px solid;
+  border-radius: 10px;
+  background-color: cornflowerblue;
+}
+.start-btn button:hover {
+  background-color: coral;
+}
+.input-box button{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  width: 4em;
+  height: 2em;
+  cursor:pointer;
+  border: 1px solid;
+  border-radius: 10px;
+  background-color: rgb(105, 179, 194);
+}
+.input-box button:hover {
+  background-color: coral;
 }
