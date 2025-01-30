@@ -1,131 +1,116 @@
 const WORDS = [
-  "AGENT",
-  "WORLD",
-  "ABOUT",
-  "HEART",
-  "WATER",
-  "SIXTY",
-  "BOARD",
-  "MONTH",
-  "MUSIC",
-  "PARTY",
-  "PIANO",
-  "MOUTH",
-  "WOMAN",
-  "SUGAR",
-  "AMBER",
-  "DREAM",
-  "LAUGH",
-  "TIGER",
-  "EARTH",
-  "MONEY",
-  "WORDS",
-  "SMILE",
-  "LEMON",
-  "SOUTH",
-  "AFTER",
-  "STONE",
-  "THING",
-  "LIGHT",
-  "STORY",
-  "POWER",
-  "TODAY",
-  "RANGE",
-  "PEARL",
-  "VENOM",
-  "PROXY",
-  "ROUND",
-  "HOVER",
-  "CANDY",
-  "ABOVE",
-  "PHONE",
-  "OTHER",
-  "SMART",
-  "BLACK",
-  "MAGIC",
-  "FRUIT",
-  "RADIO",
-  "ROYAL",
-  "HONEY",
-  "FLAKE",
-  "SOUND",
+  "AGENT", "WORLD", "ABOUT", "HEART", "WATER", "SIXTY", "BOARD", "MONTH", 
+  "MUSIC", "PARTY", "PIANO", "MOUTH", "WOMAN", "SUGAR", "AMBER", "DREAM",
+  "LAUGH", "TIGER", "EARTH", "MONEY", "WORDS", "SMILE", "LEMON", "SOUTH",
+  "AFTER", "STONE", "THING", "LIGHT", "STORY", "POWER", "TODAY", "RANGE",
+  "PEARL", "VENOM", "PROXY", "ROUND", "HOVER", "CANDY", "ABOVE", "PHONE",
+  "OTHER", "SMART", "BLACK", "MAGIC", "FRUIT", "RADIO", "ROYAL", "HONEY",
+  "FLAKE", "SOUND"
 ];
+
 let currentRow = 0;
 let randomWord = "";
+
 function startGame() {
   randomWord = randomWordGen();
-  console.log(randomWord);
+  console.log("Word to guess:", randomWord);
   clearTable();
 }
+
 function wordGame() {
-  const inputWord = document.querySelector(".inputValue").value.toUpperCase();
-  if (inputWord != "" && randomWord != "") {
-    return checkWord(randomWord, inputWord);
+  const inputElement = document.querySelector(".inputValue");
+  const inputWord = inputElement.value.toUpperCase();
+  
+  if (inputWord.length !== 5) {
+    alert("Please enter a 5-letter word.");
+    return;
   }
-  alert("Please press start button and give input to start ");
+  
+  if (randomWord === "") {
+    alert("Press Start to begin the game!");
+    return;
+  }
+
+  checkWord(randomWord, inputWord);
+  inputElement.value = "";
 }
 
 function randomWordGen() {
-  const charachters = WORDS;
-  const randomNumber = Math.round(Math.random() * charachters.length);
-  return (randomWord = charachters[randomNumber]);
+  return WORDS[Math.floor(Math.random() * WORDS.length)];
 }
 
 function checkWord(randomword, inputWord) {
-  if (randomword == inputWord) {
-    addWord(randomword, inputWord);
+  addWord(randomword, inputWord);
+  
+  if (randomword === inputWord) {
+    setTimeout(() => alert("Congratulations! You guessed it!"), 500);
     return;
   }
-  addWord(randomword, inputWord);
-  setTimeout(() => {
-    maxReach(currentRow, randomword);
-  }, 4000);
+
+  if (currentRow >= 5) {
+    setTimeout(() => {
+      alert(`Game Over! The word was: ${randomword}`);
+      clearTable();
+    }, 1000);
+  }
 }
 
 function addWord(randomword, inputWord) {
   const characters = inputWord.split("");
   const rows = document.querySelectorAll(".table tr");
-  if (currentRow <= rows.length) {
+
+  if (currentRow < rows.length) {
     const currentTableRow = rows[currentRow];
-    const color = matchColor(randomword, inputWord);
+    const colors = matchColor(randomword, inputWord);
+    
     characters.forEach((char, index) => {
-      if (index < 5) {
-        currentTableRow.querySelectorAll("td")[index].textContent = char;
-        currentTableRow.querySelectorAll("td")[index].bgColor = color[index];
-      }
+      const cell = currentTableRow.querySelectorAll("td")[index];
+      cell.textContent = char;
+      cell.style.backgroundColor = colors[index]; // FIXED: Correct way to set colors
     });
+
     currentRow++;
   }
-  const clearinput = document.querySelector(".inputValue");
-  clearinput.value = "";
 }
 
 function matchColor(randomWord, inputWord) {
-  let colors = [];
-  for (let char of inputWord) {
-    const index = randomWord.indexOf(char);
-    if (index !== -1) {
-      colors.push(randomWord[index] === inputWord[index] ? "green" : "yellow");
-    } else {
-      colors.push("grey");
+  let colors = new Array(5).fill("grey");
+  let usedLetters = new Array(5).fill(false);
+
+  // First pass: Mark correct positions (green)
+  for (let i = 0; i < 5; i++) {
+    if (inputWord[i] === randomWord[i]) {
+      colors[i] = "green";
+      usedLetters[i] = true;
     }
   }
+
+  // Second pass: Mark misplaced letters (yellow)
+  for (let i = 0; i < 5; i++) {
+    if (colors[i] === "green") continue;
+    
+    let foundIndex = randomWord.indexOf(inputWord[i]);
+    
+    while (foundIndex !== -1) {
+      if (!usedLetters[foundIndex]) {
+        colors[i] = "yellow";
+        usedLetters[foundIndex] = true;
+        break;
+      }
+      foundIndex = randomWord.indexOf(inputWord[i], foundIndex + 1);
+    }
+  }
+
   return colors;
 }
 
 function clearTable() {
   const rows = document.querySelectorAll(".table tr");
-  rows.forEach((row) => {
-    row.querySelectorAll("td").forEach((cell) => {
+  rows.forEach(row => {
+    row.querySelectorAll("td").forEach(cell => {
       cell.textContent = "";
-      cell.bgColor = "";
+      cell.style.backgroundColor = "";
     });
   });
   currentRow = 0;
-}
-function maxReach(currentRow, randomword) {
-  if (currentRow >= 5) {
-    alert(`max table reached\nWord is ${randomword}.`);
-    clearTable();
-  }
 }
